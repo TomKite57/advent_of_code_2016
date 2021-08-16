@@ -11,6 +11,8 @@ def make_string(letter_list):
 def letter_cycle(letter, iterations):
     if letter == ' ':
         return letter
+    if letter != letter.lower():
+        return letter_cycle(letter.lower(), iterations).upper()
     x = ord(letter) - ord('a')
     x += iterations
     x %= (ord('z') - ord('a') + 1)
@@ -44,4 +46,4 @@ if __name__ == "__main__":
     data = read_file("data/day_04.dat")
 
     print(sum([x.id for x in data if x.real_room()]))
-    print(*[x.id for x in data if "north pole objects" in x.decrypt()])
+    print(*[x.id for x in data if "northpole" in x.decrypt().lower()])
