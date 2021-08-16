@@ -50,6 +50,7 @@ int main()
         {{'D', 'U'}, 'B'}, {{'D', 'D'}, 'D'}, {{'D', 'L'}, 'D'}, {{'D', 'R'}, 'D'},
     };
 
+
     pos='5';
     for (auto const& path : instructions)
     {
