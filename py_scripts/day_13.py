@@ -1,9 +1,10 @@
+from aoc_tools import Advent_Timer
+
 def readfile(fname):
     with open(fname, 'r') as file:
         return int(file.read())
 
 def manhat_dist(x1, y1, x2, y2):
-    #return 0
     return abs(x2-x1) + abs(y2-y1)
 
 def is_wall(x, y, num):
@@ -22,7 +23,7 @@ class astar_cell:
         self.F = G + H
         self.came_from = came_from
 
-def astar_step(open_paths, maze_state, pout, num):
+def astar_step(open_paths, maze_state, pout, num, maxstep):
     open_paths = sorted(open_paths, key=lambda x: maze_state[x].F, reverse=True)
     p = open_paths.pop()
 
@@ -36,10 +37,17 @@ def astar_step(open_paths, maze_state, pout, num):
             continue
         if pnew in maze_state and maze_state[pnew].G <= maze_state[p].G+1:
             continue
+        if maze_state[p].G+1 >= maxstep:
+            continue
         maze_state[pnew] = astar_cell(maze_state[p].G+1, manhat_dist(*pnew, *pout), s)
-        open_paths.append(pnew)
+        if (pnew == pout):
+            maxstep = maze_state[p].G+1
+        else:
+            open_paths.append(pnew)
 
-    return open_paths, maze_state
+
+
+    return open_paths, maze_state, maxstep
 
 def shortest_path_length(maze_state, pout):
     return len(shortest_path(maze_state, pout)) - 1
@@ -82,6 +90,7 @@ def show_maze(maze_state, pin, pout, num):
 
 
 if __name__ == "__main__":
+    timer = Advent_Timer()
     data = readfile("data/day_13.dat")
     pin  = (1,  1)
     pout = (31, 39)
@@ -89,11 +98,13 @@ if __name__ == "__main__":
     open_paths = [pin,]
     maze_state = dict()
     maze_state[open_paths[-1]] = astar_cell(0, manhat_dist(*pin, *pout), None)
+    maxstep = float("inf")
 
     while len(open_paths) != 0:
-        open_paths, maze_state = astar_step(open_paths, maze_state, pout, data)
+        open_paths, maze_state, maxstep = astar_step(open_paths, maze_state, pout, data, maxstep)
 
     #show_maze(maze_state, pin, pout, data)
 
     print("Shortest path is {} long".format(shortest_path_length(maze_state, pout)))
     print("Can visit {} locations within 50 steps".format(count_locs_within(maze_state, 50)))
+    timer.end_hit()
